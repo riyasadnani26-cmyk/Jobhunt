@@ -1,0 +1,14 @@
+# Personal data — this repo is public. Never commit these.
+data/
+output/
+.env
+*.pdf
+*.docx
+credentials.json
+token.json
+.browser-profile/
+
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
