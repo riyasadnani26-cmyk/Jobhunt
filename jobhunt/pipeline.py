@@ -111,6 +111,7 @@ class Pipeline:
                 log.warning("Tailoring failed for %s @ %s: %s", job.title, job.company, e)
                 continue
             self.store.update_job(row["key"], resume_path=rep["resume_path"], ats_score=rep["ats_after"],
+                                  ats_before=rep["ats_before"],
                                   status="tailored")
             log.info("Tailored %s @ %s: keyword match %d%% -> %d%%%s", job.title, job.company,
                      rep["ats_before"], rep["ats_after"],
@@ -173,4 +174,5 @@ class Pipeline:
         return made
 
     def export(self):
+        tracker.export_json(self.store, self.out / "dashboard_jobs.json")
         return tracker.export(self.store, self.out / "tracker.xlsx")

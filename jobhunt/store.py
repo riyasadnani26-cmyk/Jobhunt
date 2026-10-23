@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS jobs (
     url TEXT, apply_url TEXT, easy_apply INTEGER,
     description TEXT, posted TEXT, company_domain TEXT,
     match_score INTEGER, matched_keywords TEXT, missing_keywords TEXT,
-    resume_path TEXT, ats_score INTEGER,
+    resume_path TEXT, ats_score INTEGER, ats_before INTEGER,
     status TEXT DEFAULT 'new',
     extra TEXT
 );
@@ -39,6 +39,10 @@ class Store:
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
         self.db.executescript(SCHEMA)
+        try:  # databases created before ats_before existed
+            self.db.execute("ALTER TABLE jobs ADD COLUMN ats_before INTEGER")
+        except sqlite3.OperationalError:
+            pass
 
     # --- daily counters (used to enforce per-day limits) ---
     def used(self, counter: str) -> int:

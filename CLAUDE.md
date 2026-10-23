@@ -15,8 +15,12 @@ When the user asks to "run the job hunt" (or similar) in a Claude Code cloud ses
    plain-text body, **without** an attachment. Send the matching tailored resume
    (`output/resumes/`) to the user with SendUserFile, then move the `.eml` into `emails/done/`.
    Never send email; only create drafts.
-5. **Save state.** Commit and push `jobhunt-data` (the DB is what prevents repeat jobs and
+5. **Update the dashboard** (https://claude.ai/artifact/2brfF4VqWMSzzRssRhAw5u). Upload
+   `$JOBHUNT_DATA_DIR/output/dashboard_jobs.json` as an asset of that artifact, then update its
+   `datasets/jobs` document's `source.url`, `source.name` and `updated` (`by`: "Claude, after a run").
+   Once setup steps are finished, mark them done in its setup file the same way.
+6. **Save state.** Commit and push `jobhunt-data` (the DB is what prevents repeat jobs and
    repeat emails).
-6. **Report briefly:** new jobs found, the top matches (title, company, score, apply link,
+7. **Report briefly:** new jobs found, the top matches (title, company, score, apply link,
    Easy Apply or not), resumes tailored with keyword match before and after, any `review_numbers` flags,
    and drafts created. Remind the user to attach the resume before sending each draft.

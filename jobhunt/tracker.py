@@ -1,4 +1,5 @@
-"""Export the pipeline to output/tracker.xlsx (one row per job)."""
+"""Export the pipeline to output/tracker.xlsx and dashboard_jobs.json (one row per job)."""
+import json
 from pathlib import Path
 
 from openpyxl import Workbook
@@ -32,4 +33,23 @@ def export(store: Store, path: Path) -> Path:
     ws.freeze_panes = "A2"
     path.parent.mkdir(parents=True, exist_ok=True)
     wb.save(path)
+    return path
+
+
+def export_json(store: Store, path: Path) -> Path:
+    """Rows for the dashboard. No recruiter names or emails: only counts."""
+    rows = []
+    for row in store.jobs():
+        contacts = store.contacts(row["key"])
+        rows.append({
+            "key": row["key"], "found_on": row["found_on"], "title": row["title"],
+            "company": row["company"], "location": row["location"], "source": row["source"],
+            "apply_type": "Easy Apply" if row["easy_apply"] else "Company site",
+            "apply_url": row["apply_url"] or row["url"], "fit": row["match_score"],
+            "ats_before": row["ats_before"], "ats_after": row["ats_score"],
+            "contacts": len(contacts), "drafts": sum(1 for c in contacts if c["draft_id"]),
+            "status": row["status"],
+        })
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(rows, indent=1, ensure_ascii=False))
     return path

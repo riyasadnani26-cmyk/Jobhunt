@@ -63,6 +63,10 @@ def test_full_run_respects_daily_caps(p):
     assert any(part.get_filename(" ").endswith(".docx") for part in msg.iter_attachments())
 
     assert p.export().exists()
+    import json
+    rows = json.loads((p.out / "dashboard_jobs.json").read_text())
+    assert len(rows) == 3 and {r["drafts"] for r in rows} <= {0, 1}
+    assert all(r["ats_after"] is not None and "@" not in json.dumps(r) for r in rows)
 
 
 def test_low_confidence_emails_are_not_drafted(p, monkeypatch):
