@@ -1,0 +1,39 @@
+# Copy to data/master_resume.yaml and fill in with your real details.
+# data/ is git-ignored so your personal info never reaches the public repo.
+name: Your Name
+headline: SAP HCM Payroll Consultant
+contact:
+  email: you@example.com
+  phone: +91 00000 00000
+  location: Hyderabad, Telangana
+  linkedin: linkedin.com/in/your-handle
+summary: Two to three sentences about who you are professionally.
+experience:
+- id: acme
+  title: SAP HCM Functional Consultant
+  company: Acme Corp
+  start: Jan 2024
+  end: Present
+  bullets:
+  - Supported payroll for 3 countries ...
+  - Resolved Payroll Control Center incidents ...
+projects:
+- name: Payroll migration
+  description: What you did and the outcome.
+skills:
+  technical:
+  - SAP HCM Payroll
+  - HRIS
+  evidenced:
+  - LSMW
+  professional:
+  - Stakeholder Management
+education:
+- degree: MBA – Human Resources
+  school: Some University
+  dates: 2022 – 2024
+certifications:
+- Certification name – Issuer
+leadership: []
+languages:
+- English
