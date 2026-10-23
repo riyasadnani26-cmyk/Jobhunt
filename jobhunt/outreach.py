@@ -4,6 +4,7 @@ Nothing is ever sent automatically: you review each draft in Gmail and click Sen
 If Gmail isn't set up, drafts are written as .eml files you can open in any mail app.
 """
 import base64
+import os
 import mimetypes
 import re
 from email.message import EmailMessage
@@ -57,13 +58,22 @@ def build_message(to: str, sender: str, email: Email, attachment: Path | None) -
 
 
 def _gmail(cfg: dict):
+    from google.auth.transport.requests import Request
+    from google.oauth2.credentials import Credentials
+    from googleapiclient.discovery import build
+
+    # Headless (cloud / iPad): a refresh token stored as environment variables.
+    env = {k: os.environ.get(f"GMAIL_{k.upper()}") for k in ("client_id", "client_secret", "refresh_token")}
+    if all(env.values()):
+        creds = Credentials(None, token_uri="https://oauth2.googleapis.com/token", scopes=SCOPES, **env)
+        creds.refresh(Request())
+        return build("gmail", "v1", credentials=creds, cache_discovery=False)
+
+    # Desktop: browser sign-in once, token cached in data/token.json.
     creds_path, token_path = cfg["paths"]["gmail_credentials"], cfg["paths"]["gmail_token"]
     if not creds_path.exists():
         return None
-    from google.auth.transport.requests import Request
-    from google.oauth2.credentials import Credentials
     from google_auth_oauthlib.flow import InstalledAppFlow
-    from googleapiclient.discovery import build
 
     creds = Credentials.from_authorized_user_file(str(token_path), SCOPES) if token_path.exists() else None
     if not creds or not creds.valid:

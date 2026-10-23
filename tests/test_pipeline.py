@@ -72,3 +72,25 @@ def test_low_confidence_emails_are_not_drafted(p, monkeypatch):
     p.tailor()
     p.find_contacts(use_linkedin=False)
     assert p.draft_emails() == 0
+
+
+def test_data_dir_env_moves_personal_files(monkeypatch, tmp_path):
+    monkeypatch.setenv("JOBHUNT_DATA_DIR", str(tmp_path))
+    cfg = load_config()
+    assert cfg["paths"]["master_resume"] == tmp_path / "master_resume.yaml"
+    assert cfg["paths"]["database"] == tmp_path / "jobhunt.db"
+    assert cfg["paths"]["output_dir"] == tmp_path / "output"
+
+
+def test_gmail_refresh_token_from_env(monkeypatch, tmp_path):
+    import google.oauth2.credentials as gcreds
+    import googleapiclient.discovery as discovery
+
+    for k, v in {"GMAIL_CLIENT_ID": "id", "GMAIL_CLIENT_SECRET": "secret", "GMAIL_REFRESH_TOKEN": "rt"}.items():
+        monkeypatch.setenv(k, v)
+    seen = {}
+    monkeypatch.setattr(gcreds.Credentials, "refresh", lambda self, req: seen.update(rt=self.refresh_token))
+    monkeypatch.setattr(discovery, "build", lambda *a, **k: "service")
+    cfg = load_config()
+    cfg["paths"]["gmail_credentials"] = tmp_path / "missing.json"
+    assert outreach._gmail(cfg) == "service" and seen["rt"] == "rt"

@@ -19,10 +19,19 @@ def load_env(path: Path = ROOT / ".env") -> None:
 
 
 def load_config(path: Path = ROOT / "config.yaml") -> dict:
+    """Paths in config.yaml are relative to the repo. Set JOBHUNT_DATA_DIR to keep
+    personal data elsewhere (e.g. a private repo when running in the cloud): every
+    `data/...` path then lives under it, and `output` becomes JOBHUNT_DATA_DIR/output."""
     load_env()
     cfg = yaml.safe_load(path.read_text())
+    data_dir = os.environ.get("JOBHUNT_DATA_DIR")
     for key, rel in cfg["paths"].items():
-        cfg["paths"][key] = ROOT / rel
+        if data_dir:
+            rel_path = Path(rel)
+            rel = rel_path.relative_to("data") if rel_path.parts[0] == "data" else rel_path
+            cfg["paths"][key] = Path(data_dir).expanduser() / rel
+        else:
+            cfg["paths"][key] = ROOT / rel
     return cfg
 
 

@@ -53,6 +53,37 @@ files in `output/emails/`.
 **LinkedIn:** run `python -m jobhunt login` once and log in by hand in the window
 that opens. The session is saved in `data/.browser-profile/`; your password is never stored.
 
+## Running from an iPad (cloud)
+
+An iPad can't run Python or a desktop browser, so the agent runs in a Claude Code
+cloud session that you drive from the Claude app. Logged-in LinkedIn browsing is off
+in this mode, because logging into your account from a cloud server is what gets
+accounts flagged. JSearch still returns LinkedIn postings, including their company apply links.
+
+1. **Environment settings** (cloud environment menu in the session's title bar → Edit):
+   - *Network access:* allow `jsearch.p.rapidapi.com`, `api.adzuna.com`, `api.hunter.io`,
+     `api.anthropic.com`, `gmail.googleapis.com` and `oauth2.googleapis.com`. To also fetch
+     full job descriptions from company career pages, choose a broader access level.
+   - *Environment variables:* the keys from the table above, plus
+     `JOBHUNT_DATA_DIR` pointing at your private data folder (see below).
+2. **Private data.** This repo is public, so your master resume, the job database and
+   the generated resumes live in a separate **private** repo, which is cloned
+   into `JOBHUNT_DATA_DIR` for each run.
+3. **Gmail drafts.** Pick one:
+   - *Gmail connector, no setup:* Claude creates the drafts in your Gmail through the
+     connector, without the attachment. The tailored resume is sent to you in the
+     Claude app; attach it in Gmail when you review the draft.
+   - *Automatic attachments, ~15 minutes in Safari:* in Google Cloud Console, create a project, enable
+     the Gmail API, and configure the OAuth consent screen (External; add yourself as a test
+     user, then **Publish app**, otherwise the token expires after 7 days). Create
+     an OAuth client ID of type *Web application* with redirect URI
+     `https://developers.google.com/oauthplayground`. In the OAuth 2.0 Playground, open
+     the gear menu, tick *Use your own OAuth credentials* and enter the client ID and
+     secret. Authorize scope `https://www.googleapis.com/auth/gmail.compose`, then
+     *Exchange authorization code for tokens*. Save `GMAIL_CLIENT_ID`,
+     `GMAIL_CLIENT_SECRET` and `GMAIL_REFRESH_TOKEN` as environment variables, never in chat.
+4. Run `python -m jobhunt run --no-linkedin` daily (by hand, or as a scheduled task).
+
 ## Daily use
 
 ```bash

@@ -1,5 +1,6 @@
 """The daily run: search -> filter/score -> tailor -> find contacts -> draft emails."""
 import logging
+import os
 from contextlib import ExitStack
 from pathlib import Path
 
@@ -56,6 +57,9 @@ class Pipeline:
             added += self._search_linkedin(terms, locations)
 
         apis = [m for m, on in ((jsearch, src.get("jsearch")), (adzuna, src.get("adzuna"))) if on]
+        for api, env in ((jsearch, "RAPIDAPI_KEY"), (adzuna, "ADZUNA_APP_KEY")):
+            if api in apis and not os.environ.get(env):
+                log.warning("%s skipped: %s is not set", api.__name__.rsplit(".", 1)[-1], env)
         for term in terms:
             for loc in locations:
                 for api in apis:
