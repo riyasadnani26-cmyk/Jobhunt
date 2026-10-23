@@ -65,7 +65,7 @@ accounts flagged. JSearch still returns LinkedIn postings, including their compa
      `api.anthropic.com`, `gmail.googleapis.com` and `oauth2.googleapis.com`. To also fetch
      full job descriptions from company career pages, choose a broader access level.
    - *Environment variables:* the keys from the table above, plus
-     `JOBHUNT_DATA_DIR` pointing at your private data folder (see below).
+     (`JOBHUNT_DATA_DIR` is set by the run procedure in `CLAUDE.md`).
 2. **Private data.** This repo is public, so your master resume, the job database and
    the generated resumes live in a separate **private** repo, which is cloned
    into `JOBHUNT_DATA_DIR` for each run.
